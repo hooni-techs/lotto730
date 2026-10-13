@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>로또 용지 인쇄</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Oswald:wght@500;600;700&family=Nanum+Gothic+Coding:wght@400;700&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: #e9e6df;
+      color: #1b1a18;
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+
+    .toolbar {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 16px 8px;
+    }
+    .toolbar h1 { font-size: 18px; margin: 0 0 4px; }
+    .toolbar p { font-size: 13px; color: #555; margin: 0 0 14px; line-height: 1.6; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+    .row label { font-size: 13px; font-weight: 700; min-width: 72px; }
+    .row input {
+      flex: 1 1 260px;
+      min-width: 0;
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .row input.nums { flex: 0 1 260px; }
+    button {
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 0;
+      border-radius: 6px;
+      background: #1b1a18;
+      color: #fff;
+      cursor: pointer;
+    }
+    button.secondary { background: #fff; color: #1b1a18; border: 1px solid #bbb; }
+    .notice {
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin: 6px 0 0;
+      line-height: 1.6;
+    }
+    .notice.warn { background: #fff4d6; border: 1px solid #e8c766; }
+    .notice.ok { background: #e6f4ea; border: 1px solid #9fd3ad; }
+    .notice code { word-break: break-all; }
+
+    .sheet {
+      max-width: 960px;
+      margin: 12px auto 40px;
+      padding: 0 16px;
+    }
+    .ticket-wrap {
+      position: relative;
+      width: 360px;
+      max-width: 100%;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    .ticket-wrap svg { display: block; width: 100%; height: auto; }
+    .hint { text-align: center; font-size: 12px; color: #666; margin-top: 14px; }
+
+    /* 인쇄 설정: A4 세로, 실제 크기 80mm x 136mm + 재단선 */
+    @page { size: A4 portrait; margin: 0; }
+    @media print {
+      body { background: #fff; }
+      .toolbar, .hint { display: none !important; }
+      .sheet {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        width: 210mm;
+        height: 296mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ticket-wrap {
+        width: 80mm;
+        height: 136mm;
+        max-width: none;
+        box-shadow: none;
+        outline: 0.2mm dashed #bbb;
+        outline-offset: 3mm;
+      }
+      .ticket-wrap svg { width: 80mm; height: 136mm; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>로또 용지 인쇄</h1>
+    <p>
+      QR 코드에 들어갈 주소를 확인한 뒤 <b>인쇄하기</b>를 누르세요. (이 상단 영역은 인쇄되지 않습니다)<br>
+      인쇄 설정: 용지 A4 · <b>세로</b> · 배율 <b>100%(실제 크기)</b> · 여백 없음 · <b>배경 그래픽 켜기</b>
+    </p>
+    <div class="row">
+      <label for="url">QR 주소</label>
+      <input id="url" type="url" inputmode="url" placeholder="https://아이디.github.io/저장소이름/" autocomplete="off">
+    </div>
+    <div class="row">
+      <label for="nums">번호 6개</label>
+      <input id="nums" class="nums" type="text" inputmode="numeric" placeholder="3, 9, 14, 22, 31, 45" autocomplete="off">
+      <button type="button" id="apply" class="secondary">적용</button>
+      <button type="button" id="print">인쇄하기</button>
+    </div>
+    <div id="notice" class="notice"></div>
+  </div>
+
+  <div class="sheet">
+    <div class="ticket-wrap" id="ticket"></div>
+    <p class="hint">실제 인쇄 크기: 80mm × 136mm (실제 로또 용지 크기) · 점선을 따라 재단하세요.</p>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="assets/js/qrcode.js"></script>
+  <script src="assets/js/ticket.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var cfg = window.SITE_CONFIG || {};
+      var ticketCfg = Object.assign({}, cfg.ticket || {});
+      var urlInput = document.getElementById("url");
+      var numsInput = document.getElementById("nums");
+      var notice = document.getElementById("notice");
+      var holder = document.getElementById("ticket");
+
+      // 기본 주소: config 의 siteUrl → 없으면 지금 열린 페이지의 폴더 주소
+      function defaultUrl() {
+        if (cfg.siteUrl) return cfg.siteUrl;
+        if (/^https?:$/.test(location.protocol)) return new URL("./", location.href).href;
+        return "";
+      }
+
+      function checkUrl(url) {
+        if (!url) {
+          return { ok: false, msg: "QR 주소가 비어 있습니다. GitHub Pages 배포 주소를 입력하거나, 배포된 사이트에서 이 페이지(print-lotto.html)를 열어 주세요." };
+        }
+        var parsed;
+        try { parsed = new URL(url); } catch (e) {
+          return { ok: false, msg: "올바른 주소 형식이 아닙니다. https:// 로 시작하는 전체 주소를 입력하세요." };
+        }
+        if (parsed.protocol !== "https:") {
+          return { ok: false, msg: "https 주소가 아닙니다. 스마트폰에서 열리지 않을 수 있어요: <code>" + parsed.href + "</code>" };
+        }
+        if (/^(localhost|127\.|192\.168\.|10\.)/.test(parsed.hostname)) {
+          return { ok: false, msg: "내 컴퓨터 주소(로컬)입니다. 테스트용으로만 사용하고, 인쇄 전에는 실제 배포 주소로 바꾸세요." };
+        }
+        return { ok: true, msg: "QR 연결 주소: <code>" + parsed.href + "</code> — 인쇄 전 화면의 QR을 휴대폰으로 스캔해 꼭 확인하세요." };
+      }
+
+      function parseNumbers(text) {
+        var list = String(text).split(/[^0-9]+/).filter(Boolean).map(Number);
+        var unique = list.filter(function (n, i) { return n >= 1 && n <= 45 && list.indexOf(n) === i; });
+        return unique.length === 6 ? unique : null;
+      }
+
+      function draw() {
+        var url = urlInput.value.trim();
+        var state = checkUrl(url);
+        notice.className = "notice " + (state.ok ? "ok" : "warn");
+        notice.innerHTML = state.msg;
+        holder.innerHTML = window.LottoTicket.render({ url: url, ticket: ticketCfg });
+      }
+
+      function apply() {
+        var nums = parseNumbers(numsInput.value);
+        if (numsInput.value.trim() && !nums) {
+          alert("1~45 사이의 서로 다른 숫자 6개를 입력하세요.");
+          return;
+        }
+        if (nums) ticketCfg.numbers = nums;
+        draw();
+      }
+
+      urlInput.value = defaultUrl();
+      numsInput.value = (ticketCfg.numbers || []).join(", ");
+
+      urlInput.addEventListener("input", draw);
+      numsInput.addEventListener("keydown", function (e) { if (e.key === "Enter") apply(); });
+      document.getElementById("apply").addEventListener("click", apply);
+      document.getElementById("print").addEventListener("click", function () {
+        var state = checkUrl(urlInput.value.trim());
+        if (!state.ok && !confirm("QR 주소에 문제가 있을 수 있습니다.\n그래도 인쇄할까요?")) return;
+        window.print();
+      });
+
+      draw();
+      // 웹폰트가 로드되면 글자 폭이 바뀌므로 다시 그림
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+    })();
+  </script>
+</body>
+</html>

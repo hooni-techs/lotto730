@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f7f3ea">
+  <meta name="format-detection" content="telephone=no">
+  <title>로또 6/45 · 당첨 확인</title>
+  <meta name="description" content="로또 6/45 QR 당첨 확인">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fbf8f1' stroke='%23161512' stroke-width='4'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Arial' font-weight='700' font-size='28' fill='%23c4202f'%3E7%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500;700&family=Oswald:wght@500;600;700&family=Nanum+Gothic+Coding:wght@400;700&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-screen="check">
+  <main id="app">
+
+    <!-- 1. QR 당첨 확인 -->
+    <section class="screen screen--check" data-screen="check" aria-live="polite">
+      <div class="check">
+        <p class="check__brand"><span class="check__logo">Lotto<em>6/45</em></span><span class="check__label">QR 당첨확인</span></p>
+        <div class="ticket-frame">
+          <div id="checkTicket" class="ticket-frame__paper"></div>
+          <div class="ticket-frame__scan" aria-hidden="true"></div>
+          <div class="ticket-frame__stamp" aria-hidden="true"><span>당 첨</span></div>
+        </div>
+        <p class="check__status" id="checkStatus">QR 코드를 확인하고 있습니다…</p>
+        <div class="check__progress" aria-hidden="true"><span></span></div>
+      </div>
+    </section>
+
+    <!-- 2. 당첨금 수령 -->
+    <section class="screen screen--win" data-screen="win">
+      <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+      <div class="win">
+        <p class="win__eyebrow"><span class="rule"></span>SPECIAL DRAW · <span data-round></span><span class="rule"></span></p>
+        <h1 class="win__title" data-text="winTitle"></h1>
+        <p class="win__message" data-text="winMessage"></p>
+
+        <ul class="win__balls" id="winBalls" aria-label="당첨 번호"></ul>
+
+        <dl class="win__info">
+          <div><dt>당첨 회차</dt><dd data-round></dd></div>
+          <div><dt>당첨 등위</dt><dd>특별 당첨</dd></div>
+          <div><dt>일치 번호</dt><dd>6개 번호 모두 일치</dd></div>
+          <div><dt>수령 방법</dt><dd>모바일 즉시 수령</dd></div>
+        </dl>
+
+        <button type="button" class="btn btn--gold btn--block" id="btnClaim" data-text="claimButton"></button>
+        <p class="win__fineprint">본 안내는 당첨자 본인에게만 표시됩니다.</p>
+      </div>
+    </section>
+
+    <!-- 3. 명품 가방 당첨 공개 -->
+    <section class="screen screen--reveal" data-screen="reveal">
+      <div class="reveal" id="reveal">
+        <p class="reveal__intro" data-text="revealIntro"></p>
+        <p class="reveal__teaser"><span data-text="revealTeaser"></span></p>
+        <div class="reveal__prize">
+          <span class="reveal__line" aria-hidden="true"></span>
+          <p class="reveal__kicker">PRIZE · 특별 당첨 상품</p>
+          <h2 class="reveal__title" data-text="revealPrize"></h2>
+          <p class="reveal__sub" data-text="revealSub"></p>
+          <span class="reveal__line" aria-hidden="true"></span>
+          <button type="button" class="btn btn--dark btn--block reveal__btn" id="btnToShop">가방 고르러 가기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 명품 가방 선택 -->
+    <section class="screen screen--shop" data-screen="shop">
+      <header class="shop-head">
+        <p class="shop-head__kicker">EXCLUSIVE FOR THE WINNER</p>
+        <h2 class="shop-head__title">The Prize Boutique</h2>
+        <p class="shop-head__sub">특별 당첨 고객님을 위한 명품관</p>
+        <p class="shop-head__note">마음에 드는 가방 <b>하나</b>를 골라주세요</p>
+      </header>
+
+      <nav class="brand-bar" aria-label="브랜드 선택">
+        <div class="brand-bar__inner" id="brandBar" role="tablist"></div>
+      </nav>
+
+      <div class="shop-grid" id="shopGrid"></div>
+
+      <footer class="shop-foot">
+        <p>표시된 이미지는 이해를 돕기 위한 예시이며, 실제 상품과 다를 수 있습니다.</p>
+      </footer>
+    </section>
+
+    <!-- 5. 전환 연출 -->
+    <section class="screen screen--transition" data-screen="transition">
+      <p class="transition__text" data-text="transition"></p>
+    </section>
+
+    <!-- 6-A. 마지막 장면: 앞을 봐 줘 (현장 스크린에서 영상 재생) -->
+    <section class="screen screen--finale" data-screen="finale">
+      <div class="finale">
+        <p class="finale__line finale__line--1" data-finale="lookUpLine1"></p>
+        <p class="finale__line finale__line--2" data-finale="lookUpLine2"></p>
+      </div>
+    </section>
+
+    <!-- 6-B. 영상 (finale.mode = "video" 일 때) -->
+    <section class="screen screen--video" data-screen="video">
+      <div class="player" id="player">
+        <video id="video" class="player__video" playsinline webkit-playsinline controls preload="none" controlslist="nodownload"></video>
+
+        <div class="player__loading" id="videoLoading" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          <p id="videoLoadingText">영상을 불러오는 중…</p>
+          <button type="button" class="btn btn--ghost btn--small" id="btnSlowRetry" hidden>다시 불러오기</button>
+        </div>
+
+        <button type="button" class="player__play" id="btnPlay" hidden aria-label="영상 재생">
+          <span class="player__play-icon" aria-hidden="true"></span>
+          <span>재생하기</span>
+        </button>
+
+        <div class="player__error" id="videoError" role="alert" hidden>
+          <p class="player__error-title">영상을 불러오지 못했어요</p>
+          <p class="player__error-desc">네트워크 상태를 확인한 뒤 다시 시도해 주세요.</p>
+          <button type="button" class="btn btn--gold" id="btnRetry">다시 시도</button>
+        </div>
+
+        <div class="ending" id="ending" hidden>
+          <p class="ending__line ending__line--1" data-text="endingLine1"></p>
+          <p class="ending__line ending__line--2" data-text="endingLine2"></p>
+          <button type="button" class="ending__replay" id="btnReplay">영상 다시 보기</button>
+        </div>
+      </div>
+      <div class="player-tools">
+        <button type="button" class="player-tools__btn" id="btnFullscreen">전체 화면</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 가방 선택 확인 -->
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet__backdrop" data-close></div>
+    <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
+      <p class="sheet__title" id="sheetTitle" data-text="confirmTitle"></p>
+      <div class="sheet__item">
+        <div class="sheet__thumb" id="sheetThumb"></div>
+        <div>
+          <p class="sheet__label">선택한 가방</p>
+          <p class="sheet__brand" id="sheetBrand"></p>
+          <p class="sheet__model" id="sheetModel"></p>
+        </div>
+      </div>
+      <p class="sheet__question" data-text="confirmQuestion"></p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--dark btn--block" id="btnDecide">이걸로 결정하기</button>
+        <button type="button" class="btn btn--line btn--block" data-close>다른 가방 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="assets/js/qrcode.js"></script>
+  <script src="assets/js/ticket.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
