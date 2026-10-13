@@ -346,8 +346,12 @@
       img.loading = "lazy";
       img.referrerPolicy = "no-referrer";
       img.onload = function () {
-        if (img.naturalWidth > 0) img.classList.add("is-loaded");
-        else img.remove();
+        if (img.naturalWidth > 0) {
+          img.classList.add("is-loaded");
+          ph.style.visibility = "hidden"; // 사진이 뜨면 실루엣은 숨김
+        } else {
+          img.remove();
+        }
       };
       img.onerror = function () { // 실패하면 실루엣이 그대로 보임
         failedImages[bag.image] = true;

@@ -83,14 +83,31 @@ finale: {
 
 ---
 
-## 4. 가방 이미지 넣기
+## 4. 가방 이미지
 
-이미지가 없거나 로딩에 실패하면 금색 라인으로 그린 **가방 실루엣**이 자동으로 표시됩니다. 사진이 없어도 화면은 깨지지 않습니다. 브랜드 로고는 그리지 않고 브랜드명만 글자로 표시합니다.
+`assets/images/`에 12개 가방의 실제 상품 사진이 들어 있습니다. 각 브랜드 대표 모델의 가장 기본 컬러입니다. 배경은 흰색으로 맞추고, 4:5 비율에 같은 크기로 정리했습니다. 장당 30~140KB이고 12장을 합쳐 약 0.9MB입니다.
 
-실제 사진을 쓰려면 아래 이름으로 `assets/images/`에 저장하세요. 경로는 `config.js`의 `image`에서 바꿀 수 있습니다.
-
-| 파일명 | 상품 | 찾는 곳 |
+| 파일 | 상품 | 사진 출처 |
 |---|---|---|
+| `gucci-marmont.jpg` | GG 마몽 스몰 숄더백 (블랙) | gucci.com 공식 상품 사진 |
+| `gucci-ophidia.jpg` | 오피디아 GG 스몰 숄더백 | gucci.com 공식 상품 사진 |
+| `lv-alma.jpg` | 알마 BB 모노그램 | Fashionphile 상품 사진 |
+| `lv-neonoe.jpg` | 네오노에 MM 모노그램 (누아르) | Fashionphile 상품 사진 |
+| `chanel-classic.jpg` | 클래식 미디엄 플랩백 (블랙 캐비어, 골드) | Fashionphile 상품 사진 |
+| `chanel-19.jpg` | 샤넬 19 라지 플랩 (블랙) | Fashionphile 상품 사진 |
+| `prada-galleria.jpg` | 갤러리아 사피아노 미디엄 (블랙) | prada.com 공식 상품 사진 |
+| `prada-reedition.jpg` | 리에디션 2005 리나일론 (블랙) | prada.com 공식 상품 사진 |
+| `celine-triomphe.jpg` | 틴 트리오페 샤이니 카프스킨 (블랙) | celine.com 공식 상품 사진 |
+| `celine-belt.jpg` | 벨트 백 그레인드 카프스킨 (블랙) | Fashionphile 상품 사진 |
+| `dior-lady.jpg` | 레이디 디올 미디엄 (블랙 까나쥬) | dior.com 공식 상품 사진 |
+| `dior-booktote.jpg` | 북 토트 미디엄 (블루 오블리크) | dior.com 공식 상품 사진 |
+
+**주의**
+- 브랜드 사진은 저작권이 있습니다. 이 사이트는 개인적·비상업적 이벤트용으로만 쓰고, 이벤트가 끝나면 저장소를 비공개로 바꾸거나 삭제하는 것을 권장합니다.
+- 사진을 바꾸려면 같은 이름으로 덮어쓰거나 `config.js`의 `image` 경로를 바꾸면 됩니다. 흰 배경에 세로 4:5 비율, 1000px 이하 사진이 가장 잘 어울립니다.
+- 사진이 없거나 로딩에 실패하면 금색 라인으로 그린 가방 실루엣이 자동으로 대신 표시됩니다.
+
+---|---|---|
 | `gucci-marmont.jpg` | GG 마몽 숄더백 | gucci.com/kr |
 | `gucci-ophidia.jpg` | 오피디아 | gucci.com/kr |
 | `lv-alma.jpg` | 알마 BB | kr.louisvuitton.com |
